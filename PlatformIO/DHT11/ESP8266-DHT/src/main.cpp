@@ -19,7 +19,7 @@ void setup() {
 }
 
 void loop() {
-  delay(2000);
+  delay(1000);
 
   float rotubat = dht.readHumidity();
   float dama = dht.readTemperature();
