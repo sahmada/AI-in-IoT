@@ -3,26 +3,26 @@
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <DHTesp.h>
-#include "creds.h"
-
-DHTesp dht;
-
+#include "DHTesp.h"
 
 #define DHTPIN D5
 #define DHTTYPE DHT11
 
+#define WIFI_SSID "saa"
+#define WIFI_PWD "**********"
+DHTesp dht;
+
 WiFiUDP udp;
-//bool isWiFiOK = false;
+bool isWiFiOK = false;
 
 void WiFiConnect();
-//void WiFiEvent(WiFiEvent_t event);
+void WiFiEvent(WiFiEvent_t event);
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(F("DHT Test"));
-  dht.setup(DHTPIN, DHTesp::DHTTYPE);
+  dht.setup(DHTPIN, DHTesp::DHT11);
   WiFiConnect();
 }
 
@@ -32,12 +32,8 @@ void loop()
 
   float rotubat = dht.getHumidity();
   float dama = dht.getTemperature();
-/*
-  float rotubat = dht.readHumidity();
-  float dama = dht.readTemperature();
-  float damaFahrenheit = dht.readTemperature(true);
-*/
-  if (isnan(rotubat) || isnan(dama) ){
+  //float damaFahrenheit = dht.getTemperature(true);
+  if (isnan(rotubat) || isnan(dama)){
     Serial.println(" Failed to read from DHT");
     return;
   }
@@ -47,14 +43,13 @@ void loop()
 */
   char buffer[100] = {0};
   sprintf(buffer, "{\"temp\":%.2f ,\"hum\": %.2f}", dama, rotubat);
-/*
   if (isWiFiOK)
   {
     udp.beginPacketMulticast(IPAddress(255, 255, 255, 255), 61000, WiFi.localIP());
     udp.write(buffer);
     udp.endPacket();
   }
-*/
+
   Serial.println(buffer);
   delay(1000);
 }
@@ -62,10 +57,10 @@ void loop()
 void WiFiConnect()
 {
   WiFi.disconnect(true);
-  //WiFi.onEvent(WiFiEvent);
+  WiFi.onEvent(WiFiEvent);
   WiFi.begin(WIFI_SSID, WIFI_PWD);
 }
-/*
+
 void WiFiEvent(WiFiEvent_t event)
 {
   switch (event)
@@ -87,4 +82,3 @@ void WiFiEvent(WiFiEvent_t event)
     break;
   }
 }
-*/

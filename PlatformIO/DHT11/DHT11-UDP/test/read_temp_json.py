@@ -13,7 +13,7 @@ try:
             print("ERROR")
             continue
         temp = temp_object["temp"]
-        fault = temp_object["fault"]
-        log(temp, fault)
+        hum = temp_object["hum"]
+        #log(temp, hum)
 except KeyboardInterrupt:
     s.close()

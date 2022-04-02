@@ -17,6 +17,6 @@ try:
         temp = temp_object["temp"]
         hum = temp_object["hum"]
 
-        log(temp, hum)
+        #log(temp, hum)
 except KeyboardInterrupt:
     s.close()
