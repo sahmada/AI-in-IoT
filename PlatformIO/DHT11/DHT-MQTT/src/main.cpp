@@ -1,5 +1,3 @@
-#define TINY_GSM_MODEM_SIM800
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -8,6 +6,7 @@
 #include "creds.h"
 #include "tb_creds.h"
 #include <DHT.h>
+#include <Adafruit_Sensor.h>
 
 #define DHTPIN D5
 #define DHTTYPE DHT11
@@ -16,6 +15,10 @@ WiFiClient espClient;
 ThingsBoard tb(espClient);
 #define SERIAL_DEBUG_BAUD   115200
 
+int status = WL_IDLE_STATUS;
+
+void InitWiFi();
+void reconnect();
 
 void setup()
 {
@@ -37,7 +40,7 @@ void loop() {
     Serial.print(THINGSBOARD_SERVER);
     Serial.print(" with token ");
     Serial.println(TOKEN);
-    if (!tb.connect(THINGSBOARD_SERVER, TOKEN)) {
+    if (!tb.connect(THINGSBOARD_SERVER, TOKEN,1883,DEV_ID,TB_PWD)) {
       Serial.println("Failed to connect");
       return;
     }
@@ -54,9 +57,9 @@ void loop() {
   float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
   float heatIndexCelsius = dht.computeHeatIndex(dama,rotubat,false);
 
-  Serial.print("{\"temp\":");
+  Serial.print("{\"temperature\":");
   Serial.print(dama);
-  Serial.print(",\"hum\":");
+  Serial.print(",\"humidity\":");
   Serial.print(rotubat);
   Serial.print("}\n");
   Serial.println();
@@ -67,6 +70,9 @@ void loop() {
   Serial.println(F("°F"));
 
   Serial.println("Sending data...");
+  tb.sendTelemetryFloat("temperatue",dama);
+  tb.sendTelemetryFloat("huidity",rotubat);
+  tb.loop();
 
 }
 void InitWiFi()
@@ -74,7 +80,7 @@ void InitWiFi()
   Serial.println("Connecting to AP ...");
   // attempt to connect to WiFi network
 
-  WiFi.begin(WIFI_AP, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PWD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -86,7 +92,7 @@ void reconnect() {
   // Loop until we're reconnected
   status = WiFi.status();
   if ( status != WL_CONNECTED) {
-    WiFi.begin(WIFI_AP, WIFI_PASSWORD);
+    WiFi.begin(WIFI_SSID, WIFI_PWD);
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");

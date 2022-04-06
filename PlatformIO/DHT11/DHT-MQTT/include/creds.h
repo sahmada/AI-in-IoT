@@ -1,2 +1,2 @@
-#define WIFI_SSID "AP_SSID"
-#define WIFI_PWD "AP_PASSWORD"
+#define WIFI_SSID "Ahmad"
+#define WIFI_PWD "qaz12345"

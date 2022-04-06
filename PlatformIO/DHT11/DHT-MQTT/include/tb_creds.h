@@ -1,2 +1,5 @@
-#define TB_USER "pt100-102030"
-#define TB_PWD "hWh53J6JAxQiRqH"
+#define TOKEN "Aa@12345678"
+#define THINGSBOARD_SERVER  "tb-srv.abreman.ir"
+#define TB_USER "DHTsensor"
+#define TB_PWD "DHT01sensor"
+#define DEV_ID "DHT11"
