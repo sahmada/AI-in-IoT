@@ -7,41 +7,40 @@
 #include "tb_creds.h"
 #include <DHT.h>
 #include <Adafruit_Sensor.h>
+#include <string.h>
+
+#define SERIAL_DEBUG_BAUD   115200
 
 #define DHTPIN D5
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
+
 WiFiClient espClient;
+int status = WL_IDLE_STATUS; // = 0
+
 ThingsBoard tb(espClient);
-#define SERIAL_DEBUG_BAUD   115200
 
-int status = WL_IDLE_STATUS;
-
-void InitWiFi();
 void reconnect();
 
 void setup()
 {
   Serial.begin(SERIAL_DEBUG_BAUD);
-  
   delay(2000);
   Serial.println(F("DHT Test"));
   dht.begin();
-  
-  InitWiFi();
-  
+  Serial.print(F("Connecting to AP : "));
+  Serial.println(WIFI_SSID);
+  reconnect();
 }
 
 void loop() {
   delay(1000);
   if (!tb.connected()) {
     // Connect to the ThingsBoard
-    Serial.print("Connecting to: ");
-    Serial.print(THINGSBOARD_SERVER);
-    Serial.print(" with token ");
-    Serial.println(TOKEN);
-    if (!tb.connect(THINGSBOARD_SERVER, TOKEN,1883,DEV_ID,TB_PWD)) {
-      Serial.println("Failed to connect");
+    Serial.print(F("\nConnecting to: "));
+    Serial.println(THINGSBOARD_SERVER);
+    if (!tb.connect(THINGSBOARD_SERVER, TB_USER,1883,DEV_ID,TB_PWD)) {
+      Serial.println(F("Failed to connect"));
       return;
     }
   }
@@ -50,42 +49,27 @@ void loop() {
   float dama = dht.readTemperature();
   float damaFahrenheit = dht.readTemperature(true);
   if (isnan(rotubat) || isnan(dama) || isnan(damaFahrenheit)){
-    Serial.println(" Failed to read from DHT");
+    Serial.println(F(" Failed to read from DHT"));
     return;
   }
   
   float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
   float heatIndexCelsius = dht.computeHeatIndex(dama,rotubat,false);
 
-  Serial.print("{\"temperature\":");
-  Serial.print(dama);
-  Serial.print(",\"humidity\":");
-  Serial.print(rotubat);
-  Serial.print("}\n");
+  char buffer[42]={0};
+  sprintf(buffer, "{\"dama\":%.2f,\"rotubat\":%.2f}", dama,rotubat);
+  Serial.println(buffer);
   Serial.println();
+  Serial.print(damaFahrenheit);
   Serial.print(F("°F  Heat index: "));
   Serial.print(heatIndexCelsius);
   Serial.print(F("°C "));
   Serial.print(heatIndexFahrenheit);
   Serial.println(F("°F"));
-
-  Serial.println("Sending data...");
-  tb.sendTelemetryFloat("temperatue",dama);
-  tb.sendTelemetryFloat("huidity",rotubat);
+  Serial.println("\nSending data to server");
+  tb.sendTelemetryJson(buffer);  
   tb.loop();
 
-}
-void InitWiFi()
-{
-  Serial.println("Connecting to AP ...");
-  // attempt to connect to WiFi network
-
-  WiFi.begin(WIFI_SSID, WIFI_PWD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("Connected to AP");
 }
 
 void reconnect() {
@@ -97,6 +81,7 @@ void reconnect() {
       delay(500);
       Serial.print(".");
     }
-    Serial.println("Connected to AP");
+    Serial.print("\nAcquired IP : ");
+    Serial.println(WiFi.localIP());
   }
 }
