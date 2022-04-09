@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-//#include <PubSubClient.h>
 #include <ThingsBoard.h>
 #include <ESP8266WiFi.h>
 #include "creds.h"
