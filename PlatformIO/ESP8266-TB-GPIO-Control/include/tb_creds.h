@@ -1,0 +1,5 @@
+#define TOKEN "V@lu3-D3v!c3"
+#define THINGSBOARD_SERVER  "tb-srv.abreman.ir"
+#define TB_USER "DHTsensor"
+#define TB_PWD "DHT01sensor"
+#define DEV_ID "DHT11"

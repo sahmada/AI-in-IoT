@@ -1,7 +1,7 @@
 import serial
 import json
 
-s = serial.Serial(port='COM9', baudrate=115200, timeout=10)
+s = serial.Serial(port="COM9", baudrate=115200, timeout=10)
 
 try:
     while True:
@@ -13,7 +13,7 @@ try:
         except:
             print("ERROR")
             continue
-        temp = temp_object['temp']
-        hum = temp_object['hum']
+        temp = temp_object["temp"]
+        hum = temp_object["hum"]
 except KeyboardInterrupt:
     s.close()

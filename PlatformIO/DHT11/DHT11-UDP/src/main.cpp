@@ -8,15 +8,14 @@
 
 DHTesp dht;
 
-
-#define DHTPIN D5
+#define DHTPIN D7
 #define DHTTYPE DHT11
 
 WiFiUDP udp;
-//bool isWiFiOK = false;
+// bool isWiFiOK = false;
 
 void WiFiConnect();
-//void WiFiEvent(WiFiEvent_t event);
+// void WiFiEvent(WiFiEvent_t event);
 
 void setup()
 {
@@ -32,29 +31,30 @@ void loop()
 
   float rotubat = dht.getHumidity();
   float dama = dht.getTemperature();
-/*
-  float rotubat = dht.readHumidity();
-  float dama = dht.readTemperature();
-  float damaFahrenheit = dht.readTemperature(true);
-*/
-  if (isnan(rotubat) || isnan(dama) ){
+  /*
+    float rotubat = dht.readHumidity();
+    float dama = dht.readTemperature();
+    float damaFahrenheit = dht.readTemperature(true);
+  */
+  if (isnan(rotubat) || isnan(dama))
+  {
     Serial.println(" Failed to read from DHT");
     return;
   }
-/*
-  float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
-  float heatIndexCelsius = dht.computeHeatIndex(dama,rotubat,false);
-*/
+  /*
+    float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
+    float heatIndexCelsius = dht.computeHeatIndex(dama,rotubat,false);
+  */
   char buffer[100] = {0};
   sprintf(buffer, "{\"temp\":%.2f ,\"hum\": %.2f}", dama, rotubat);
-/*
-  if (isWiFiOK)
-  {
-    udp.beginPacketMulticast(IPAddress(255, 255, 255, 255), 61000, WiFi.localIP());
-    udp.write(buffer);
-    udp.endPacket();
-  }
-*/
+  /*
+    if (isWiFiOK)
+    {
+      udp.beginPacketMulticast(IPAddress(255, 255, 255, 255), 61000, WiFi.localIP());
+      udp.write(buffer);
+      udp.endPacket();
+    }
+  */
   Serial.println(buffer);
   delay(1000);
 }
@@ -62,7 +62,7 @@ void loop()
 void WiFiConnect()
 {
   WiFi.disconnect(true);
-  //WiFi.onEvent(WiFiEvent);
+  // WiFi.onEvent(WiFiEvent);
   WiFi.begin(WIFI_SSID, WIFI_PWD);
 }
 /*
