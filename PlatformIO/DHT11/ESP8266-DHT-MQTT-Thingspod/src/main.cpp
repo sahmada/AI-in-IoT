@@ -41,7 +41,7 @@ void loop()
     // Connect to the ThingsBoard
     Serial.print(F("\nConnecting to: "));
     Serial.println(THINGSBOARD_SERVER);
-    if (!tb.connect(THINGSBOARD_SERVER, TB_USER, 1883, DEV_ID, TB_PWD))
+    if (!tb.connect(THINGSBOARD_SERVER, TOKEN, 31883))
     {
       Serial.println(F("Failed to connect"));
       return;
