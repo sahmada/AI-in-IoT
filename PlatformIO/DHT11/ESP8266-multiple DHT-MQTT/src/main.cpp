@@ -8,16 +8,18 @@
 #include <DHT.h>
 #include <Adafruit_Sensor.h>
 #include <string.h>
-
+// define baud rate
 #define SERIAL_DEBUG_BAUD 115200
-
+// define dht22 sensor
 #define DHTPIN22 D5
 #define DHTTYPE22 DHT22
 DHT dht22(DHTPIN22, DHTTYPE22);
-
+// define dht11 sensor
 #define DHTPIN11 D6
 #define DHTTYPE11 DHT11
 DHT dht11(DHTPIN11, DHTTYPE11);
+// define HOT temperature
+float hotTemperature = 30.0;
 
 WiFiClient espClient;
 int status = WL_IDLE_STATUS; // = 0
@@ -25,10 +27,13 @@ int status = WL_IDLE_STATUS; // = 0
 ThingsBoard tb(espClient);
 
 void reconnect();
+void blinking();
 
 void setup()
 {
   Serial.begin(SERIAL_DEBUG_BAUD);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
   delay(2000);
   Serial.println(F("DHT Test"));
   dht11.begin();
@@ -80,7 +85,11 @@ void loop()
   float temperatureFahrenheit = (temperatureFahrenheit11 + temperatureFahrenheit22) / 2;
   float heatIndexCelsius = (heatIndexCelsius11 + heatIndexCelsius22) / 2;
   float heatIndexFahrenheit = (heatIndexFahrenheit11 + heatIndexFahrenheit22) / 2;
-
+  // blinking if temperature is high
+  if (temperature >= hotTemperature)
+  {
+    blinking();
+  }
   // making buffer string ready to be sent
   char buffer[42] = {0};
   sprintf(buffer, "{\"temperature\":%.2f,\"humidity\":%.2f}", temperature, humidity);
@@ -95,6 +104,14 @@ void loop()
   Serial.println("\nSending data to server");
   tb.sendTelemetryJson(buffer);
   tb.loop();
+}
+
+void blinking()
+{
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(500);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(500);
 }
 
 void reconnect()
