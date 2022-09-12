@@ -8,6 +8,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 int total_devices;
+float average_temperature =0;
 DeviceAddress sensor_address; 
 
 void setup(){
@@ -44,15 +45,22 @@ void loop(){
     if(sensors.getAddress(sensor_address, i)){
       
       Serial.print("Temperature for device: ");
-      Serial.println(i,DEC);
+      Serial.print(i,DEC);
      
       float temperature_degreeCelsius = sensors.getTempC(sensor_address);
-      Serial.print("Temp (degree celsius): ");
-      Serial.println(temperature_degreeCelsius);
-  
+      Serial.print("\t");
+      Serial.print(temperature_degreeCelsius);
+      Serial.println(" °C");
+      average_temperature += temperature_degreeCelsius;
     }
   }
-  delay(1000);
+  average_temperature /= total_devices;
+  Serial.print(" Average Temperature is :\t");
+  Serial.print(average_temperature);
+  Serial.println(" °C");
+  Serial.println("---------------------------");
+  average_temperature = 0;
+  delay(1000);  
 }
 
 
