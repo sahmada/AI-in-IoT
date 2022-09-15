@@ -9,7 +9,7 @@
 #include <Adafruit_Sensor.h>
 #include <string.h>
 
-#define SERIAL_DEBUG_BAUD   115200
+#define SERIAL_DEBUG_BAUD 115200
 
 #define DHTPIN D5
 #define DHTTYPE DHT11
@@ -33,13 +33,16 @@ void setup()
   reconnect();
 }
 
-void loop() {
+void loop()
+{
   delay(1000);
-  if (!tb.connected()) {
+  if (!tb.connected())
+  {
     // Connect to the ThingsBoard
     Serial.print(F("\nConnecting to: "));
     Serial.println(THINGSBOARD_SERVER);
-    if (!tb.connect(THINGSBOARD_SERVER, TB_USER,1883,DEV_ID,TB_PWD)) {
+    if (!tb.connect(THINGSBOARD_SERVER, TB_USER, 1883, DEV_ID, TB_PWD))
+    {
       Serial.println(F("Failed to connect"));
       return;
     }
@@ -48,40 +51,42 @@ void loop() {
   float rotubat = dht.readHumidity();
   float dama = dht.readTemperature();
   float damaFahrenheit = dht.readTemperature(true);
-  if (isnan(rotubat) || isnan(dama) || isnan(damaFahrenheit)){
+  if (isnan(rotubat) || isnan(dama) || isnan(damaFahrenheit))
+  {
     Serial.println(F(" Failed to read from DHT"));
     return;
   }
-  
-  float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
-  float heatIndexCelsius = dht.computeHeatIndex(dama,rotubat,false);
 
-  char buffer[42]={0};
-  sprintf(buffer, "{\"dama\":%.2f,\"rotubat\":%.2f}", dama,rotubat);
+  float heatIndexFahrenheit = dht.computeHeatIndex(damaFahrenheit, rotubat);
+  float heatIndexCelsius = dht.computeHeatIndex(dama, rotubat, false);
+
+  char buffer[42] = {0};
+  sprintf(buffer, "{\"dama\":%.2f,\"rotubat\":%.2f}", dama, rotubat);
   Serial.println(buffer);
-  Serial.println();
   Serial.print(damaFahrenheit);
   Serial.print(F("°F  Heat index: "));
   Serial.print(heatIndexCelsius);
   Serial.print(F("°C "));
   Serial.print(heatIndexFahrenheit);
   Serial.println(F("°F"));
-  Serial.println("\nSending data to server");
-  tb.sendTelemetryJson(buffer);  
+  Serial.println(F("\nSending data to server"));
+  tb.sendTelemetryJson(buffer);
   tb.loop();
-
 }
 
-void reconnect() {
+void reconnect()
+{
   // Loop until we're reconnected
   status = WiFi.status();
-  if ( status != WL_CONNECTED) {
+  if (status != WL_CONNECTED)
+  {
     WiFi.begin(WIFI_SSID, WIFI_PWD);
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
       delay(500);
-      Serial.print(".");
+      Serial.print(F("."));
     }
-    Serial.print("\nAcquired IP : ");
+    Serial.print(F("\nAcquired IP : "));
     Serial.println(WiFi.localIP());
   }
 }
