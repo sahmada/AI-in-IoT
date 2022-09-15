@@ -5,7 +5,7 @@
 #include <Wire.h>
 #include <DHT.h>
 
-#define DHTPIN D7
+#define DHTPIN D5
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
