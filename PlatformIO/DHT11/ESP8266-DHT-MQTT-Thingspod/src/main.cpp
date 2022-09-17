@@ -11,7 +11,7 @@
 
 #define SERIAL_DEBUG_BAUD 115200
 
-#define DHTPIN D5
+#define DHTPIN D3
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -71,6 +71,7 @@ void loop()
   Serial.print(heatIndexFahrenheit);
   Serial.println(F("°F"));
   Serial.println("\nSending data to server");
+  Serial.println(buffer);
   tb.sendTelemetryJson(buffer);
   tb.loop();
 }

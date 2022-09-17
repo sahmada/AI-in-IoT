@@ -11,11 +11,11 @@
 // define baud rate
 #define SERIAL_DEBUG_BAUD 115200
 // define dht22 sensor
-#define DHTPIN22 D5
+#define DHTPIN22 D3
 #define DHTTYPE22 DHT22
 DHT dht22(DHTPIN22, DHTTYPE22);
 // define dht11 sensor
-#define DHTPIN11 D6
+#define DHTPIN11 D2
 #define DHTTYPE11 DHT11
 DHT dht11(DHTPIN11, DHTTYPE11);
 // define HOT temperature
@@ -91,8 +91,15 @@ void loop()
     blinking();
   }
   // making buffer string ready to be sent
-  char buffer[42] = {0};
-  sprintf(buffer, "{\"temperature\":%.2f,\"humidity\":%.2f}", temperature, humidity);
+  int bufferLength = 42;
+  char buffer[bufferLength] = {0};
+  sprintf(buffer, "{\"temperature11\":%.2f,\"humidity11\":%.2f}", temperature11, humidity11);
+  Serial.println(buffer);
+  Serial.println();
+  tb.sendTelemetryJson(buffer);
+  Serial.println(buffer);
+  memset(buffer, 0, bufferLength);
+  sprintf(buffer, "{\"temperature22\":%.2f,\"humidity22\":%.2f}", temperature22, humidity22);
   Serial.println(buffer);
   Serial.println();
   Serial.print(temperatureFahrenheit);
@@ -104,6 +111,7 @@ void loop()
   Serial.println("\nSending data to server");
   tb.sendTelemetryJson(buffer);
   tb.loop();
+  memset(buffer, 0, bufferLength);
 }
 
 void blinking()
