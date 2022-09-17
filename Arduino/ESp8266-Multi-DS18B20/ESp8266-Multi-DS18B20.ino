@@ -46,8 +46,9 @@ void loop(){
       
       Serial.print("Temperature for device: ");
       Serial.print(i,DEC);
-     
-      float temperature_degreeCelsius = sensors.getTempC(sensor_address);
+      float temperature_degreeCelsius = sensors.getTempCByIndex(i);
+      
+      //float temperature_degreeCelsius = sensors.getTempC(sensor_address);
       Serial.print("\t");
       Serial.print(temperature_degreeCelsius);
       Serial.println(" °C");
@@ -67,6 +68,6 @@ void loop(){
 void printAddress(DeviceAddress deviceAddress) {
   for (uint8_t i = 0; i < 8; i++){
     if (deviceAddress[i] < 16) Serial.print("0");
-      Serial.print(deviceAddress[i], HEX);
+    Serial.print(deviceAddress[i], HEX);
   }
 }

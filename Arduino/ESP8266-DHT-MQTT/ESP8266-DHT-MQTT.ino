@@ -71,6 +71,8 @@ void loop()
   Serial.print(heatIndexFahrenheit);
   Serial.println(F("°F"));
   Serial.println("\nSending data to server");
+  Serial.print("size of buffer : ");
+  Serial.println(sizeof(buffer));
   tb.sendTelemetryJson(buffer);
   tb.loop();
 }
