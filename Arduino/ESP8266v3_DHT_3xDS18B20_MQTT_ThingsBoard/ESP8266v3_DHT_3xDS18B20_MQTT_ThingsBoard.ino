@@ -8,10 +8,22 @@
 #include <DHT.h>
 #include <Adafruit_Sensor.h>
 #include <string.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS 14 // GPIO 14 = D5
+
+OneWire oneWire(ONE_WIRE_BUS);
+
+DallasTemperature sensors(&oneWire);
+
+int total_devices;
+DeviceAddress sensor_address;
+float average_temperature =0;
 
 #define SERIAL_DEBUG_BAUD 115200
 
-#define DHTPIN D3
+#define DHTPIN D4
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -25,9 +37,27 @@ void reconnect();
 void setup()
 {
   Serial.begin(SERIAL_DEBUG_BAUD);
-  delay(2000);
-  Serial.println(F("DHT Test"));
   dht.begin();
+  sensors.begin();
+  total_devices = sensors.getDeviceCount();
+  Serial.print(F("Locating devices..."));
+  Serial.print(F("Found "));
+  Serial.print(total_devices, DEC);
+  Serial.println(F(" devices."));
+  
+  for(int i=0;i<total_devices; i++){
+    if(sensors.getAddress(sensor_address, i)){
+      Serial.print(F("Found device "));
+      Serial.print(i, DEC);
+      Serial.print(F(" with address: "));
+      printAddress(sensor_address);
+      Serial.println();
+    } else {
+      Serial.print(F("Found device at "));
+      Serial.print(i, DEC);
+      Serial.print(F(" but could not detect address. Check circuit connection!"));
+    }
+  }
   Serial.print(F("Connecting to AP : "));
   Serial.println(WiFi.SSID());
   reconnect();
@@ -41,13 +71,31 @@ void loop()
     // Connect to the ThingsBoard
     Serial.print(F("\nConnecting to: "));
     Serial.println(THINGSBOARD_SERVER);
-    if (!tb.connect(THINGSBOARD_SERVER, TB_USER, 1883, DEV_ID, TB_PWD))
+    if (!tb.connect(THINGSBOARD_SERVER, TB_TOKEN, 1883)
     {
       Serial.println(F("Failed to connect"));
       return;
     }
   }
-
+  sensors.requestTemperatures(); 
+  for(int i=0;i<total_devices; i++){
+    if(sensors.getAddress(sensor_address, i)){   
+      Serial.print("Temperature for device: ");
+      Serial.print(i,DEC);     
+      float temperature_degreeCelsius = sensors.getTempC(sensor_address);
+      Serial.print("\t");
+      Serial.print(temperature_degreeCelsius);
+      Serial.println(" °C");
+      average_temperature += temperature_degreeCelsius;
+    }
+  }
+  average_temperature /= total_devices;
+  Serial.print(" Average Temperature is :\t");
+  Serial.print(average_temperature);
+  Serial.println(" °C");
+  Serial.println("---------------------------");
+  average_temperature = 0;
+  delay(1000);  
   float humidity = dht.readHumidity();
   float temperature = dht.readTemperature();
   float temperatureFahrenheit = dht.readTemperature(true);
@@ -71,8 +119,6 @@ void loop()
   Serial.print(heatIndexFahrenheit);
   Serial.println(F("°F"));
   Serial.println("\nSending data to server");
-  Serial.print("Size of buffer : ");
-  Serial.println(sizeof(buffer));
   tb.sendTelemetryJson(buffer);
   tb.loop();
 }
@@ -91,5 +137,11 @@ void reconnect()
     }
     Serial.print("\nAcquired IP : ");
     Serial.println(WiFi.localIP());
+  }
+}
+void printAddress(DeviceAddress deviceAddress) {
+  for (uint8_t i = 0; i < 8; i++){
+    if (deviceAddress[i] < 16) Serial.print("0");
+      Serial.print(deviceAddress[i], HEX);
   }
 }
