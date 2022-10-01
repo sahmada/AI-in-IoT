@@ -15,6 +15,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 int total_devices;
+char devID[3][16];
 DeviceAddress sensor_address;
 
 WiFiClient espClient;
@@ -29,7 +30,9 @@ void printAddress(DeviceAddress sensor_address)
   {
     if (sensor_address[i] < 16)
       Serial.print("0");
-    Serial.print(sensor_address[i], HEX);
+    //Serial.print(sensor_address[i], HEX);
+    devID[i][16] = sensor_address[i];
+
   }
 }
 void reconnect()
@@ -78,6 +81,10 @@ void setup()
       Serial.print(" but could not detect address. Check circuit connection!");
     }
   }
+
+  Serial.println(devID[1][16]);
+  Serial.println(devID[2][16]);
+  Serial.println(devID[3][16]);
   if (!tb.connected())
   {
     // Connect to the ThingsBoard
@@ -127,7 +134,7 @@ void loop()
   Serial.println(strlen(buffer));
   delay(1000);
   Serial.println(buffer);
-  Serial.println(tb.sendTelemetryJson(buffer));
+  
   tb.sendTelemetryJson(buffer);
   tb.loop();
 }

@@ -9,6 +9,7 @@ DallasTemperature sensors(&oneWire);
 
 int total_devices;
 float average_temperature =0;
+
 DeviceAddress sensor_address; 
 
 void setup(){
@@ -27,6 +28,7 @@ void setup(){
       Serial.print("Found device ");
       Serial.print(i, DEC);
       Serial.print(" with address: ");
+      
       printAddress(sensor_address);
       Serial.println();
     } else {
@@ -35,6 +37,7 @@ void setup(){
       Serial.print(" but could not detect address. Check circuit connection!");
     }
   }
+  
 }
 
 void loop(){ 
@@ -69,5 +72,6 @@ void printAddress(DeviceAddress deviceAddress) {
   for (uint8_t i = 0; i < 8; i++){
     if (deviceAddress[i] < 16) Serial.print("0");
     Serial.print(deviceAddress[i], HEX);
+    
   }
 }

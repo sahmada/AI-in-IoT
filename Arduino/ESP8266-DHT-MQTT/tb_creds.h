@@ -1,4 +1,4 @@
-#define TOKEN "Aa@1234567890"
+#define TOKEN "DHT11_DEMO_TOKEN"
 #define THINGSBOARD_SERVER  "185.206.231.244"
 #define TB_USER "DHTsensor"
 #define TB_PWD "DHT01sensor"

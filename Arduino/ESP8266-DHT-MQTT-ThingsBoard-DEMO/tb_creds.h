@@ -1,0 +1,5 @@
+#define TOKEN "An4Atx3LMjBv6XuT3QVX"
+#define THINGSBOARD_SERVER  "demo.thingsboard.io"
+#define TB_USER "DHTsensor"
+#define TB_PWD "DHT01sensor"
+#define DEV_ID "e6cc5620-2c6a-11ed-89c2-7b8e9c33fd73"
